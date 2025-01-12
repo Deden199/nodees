@@ -1,3 +1,4 @@
+// src/pages/_document.tsx
 
 import { Html, Head, Main, NextScript } from "next/document";
 
@@ -15,6 +16,7 @@ export default function Document() {
       <body className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
         <Main />
         <NextScript />
+        <div id="modal-root"></div> {/* Elemen root untuk modal */}
       </body>
     </Html>
   );

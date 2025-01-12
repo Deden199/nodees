@@ -1,5 +1,5 @@
 // pages/index.tsx
-
+import '@/styles/globals.css';
 import React from "react";
 import Head from "next/head";
 import { ToastContainer } from "react-toastify";
@@ -17,6 +17,12 @@ export default function HomePage() {
         <meta
           name="google-site-verification"
           content="1UIYNjsnw0nZxvpxJryHB5xLSPWtYtS0FU4fvSTCFs0"
+        />
+
+        {/* Google Fonts */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+          rel="stylesheet"
         />
 
         {/* Title halaman utamanya */}
@@ -100,32 +106,29 @@ export default function HomePage() {
       {/* Section Hero */}
       <section className="text-center py-16 bg-gradient-to-b from-gray-900 to-gray-800 animate-fade">
         <h2 className="text-5xl font-extrabold mb-6">XRPL Quantum Node</h2>
-        <p className="max-w-3xl mx-auto text-lg leading-relaxed mb-8">
+        <p className="max-w-3xl mx-auto text-lg leading-relaxed mb-8 text-gray-300">
           Explore the future of blockchain with XRPL Quantum Node. Built on the
           XRP Ledger, we deliver efficiency, scalability, and advanced
           tokenization solutions globally.
         </p>
         <a
           href="#whitepaper"
-          className="px-6 py-3 bg-cyan-500 text-lg font-semibold rounded-md shadow-md btn-glow hover:bg-cyan-600 transition"
+          className="px-6 py-3 bg-cyan-500 text-lg font-semibold text-white rounded-md shadow-md btn-glow hover:bg-cyan-600 transition"
         >
           Learn More
         </a>
       </section>
 
-      {/*
-        SISIPKAN KOMponen DeveloperTools
-        di BAWAH Learn More (sebelum Key Features)
-      */}
+      {/* Komponen DeveloperTools */}
       <DeveloperTools />
 
       {/* Key Features */}
-      <section className="py-16 animate-fade">
+      <section className="py-16 animate-fade key-features-section">
         <h3 className="text-4xl font-extrabold text-center text-cyan-400 mb-12">
           Key Features
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-6">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
+          <div className="feature-item">
             <h4 className="text-2xl font-semibold text-cyan-400 mb-3">
               Low Fees
             </h4>
@@ -133,13 +136,13 @@ export default function HomePage() {
               Benefit from XRPL&apos;s minimal transaction costs.
             </p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
+          <div className="feature-item">
             <h4 className="text-2xl font-semibold text-cyan-400 mb-3">
               High Speed
             </h4>
             <p className="text-gray-300">Process transactions in just 3-5 seconds.</p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
+          <div className="feature-item">
             <h4 className="text-2xl font-semibold text-cyan-400 mb-3">
               Decentralized Exchange
             </h4>
@@ -147,7 +150,7 @@ export default function HomePage() {
               Trade tokens seamlessly on XRPL&apos;s built-in DEX.
             </p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition">
+          <div className="feature-item">
             <h4 className="text-2xl font-semibold text-cyan-400 mb-3">
               Scalability
             </h4>
@@ -238,6 +241,7 @@ export default function HomePage() {
             target="_blank"
             rel="noreferrer"
             className="text-cyan-400 hover:text-cyan-600 transition"
+            aria-label="Twitter"
           >
             Twitter
           </a>
@@ -246,6 +250,7 @@ export default function HomePage() {
             target="_blank"
             rel="noreferrer"
             className="text-cyan-400 hover:text-cyan-600 transition"
+            aria-label="Telegram"
           >
             Telegram
           </a>
@@ -254,6 +259,7 @@ export default function HomePage() {
             target="_blank"
             rel="noreferrer"
             className="text-cyan-400 hover:text-cyan-600 transition"
+            aria-label="Website"
           >
             Website
           </a>

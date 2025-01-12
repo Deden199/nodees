@@ -1,9 +1,13 @@
+// src/components/DeveloperTools.tsx
 "use client";
 
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import React, { useState, useEffect, useRef } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import ReactDOM from "react-dom"; // Import ReactDOM for Portals
+import CodeIcon from "@heroicons/react/24/outline/WalletIcon";
+import CollectionIcon from "@heroicons/react/24/outline/WalletIcon";
+import BookOpenIcon from "@heroicons/react/24/outline/BookOpenIcon";
 
 /**
  * Decode a 40-hex-digit currency code back to ASCII (for symbols > 3 chars).
@@ -43,6 +47,9 @@ const DeveloperTools: React.FC = () => {
 
   // Sologenic URL only set if mainnet
   const [sologenicUrl, setSologenicUrl] = useState<string | null>(null);
+
+  // Ref for modal root
+  const modalRootRef = useRef<HTMLDivElement | null>(null);
 
   // Helper: add log to log state
   const addLog = (message: string) => {
@@ -182,6 +189,68 @@ const DeveloperTools: React.FC = () => {
     }
   };
 
+  // Create modal root dynamically
+  useEffect(() => {
+    const modalRoot = document.createElement("div");
+    document.body.appendChild(modalRoot);
+    modalRootRef.current = modalRoot;
+
+    return () => {
+      if (modalRootRef.current) {
+        document.body.removeChild(modalRootRef.current);
+      }
+    };
+  }, []);
+
+  // Modal Component
+  const LogModal = () => {
+    return (
+      <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-[60]">
+        <div className="bg-gray-800 rounded-lg shadow-lg p-5 w-full max-w-lg animate-fade">
+          <h2 className="text-cyan-400 text-xl font-semibold mb-4">
+            Transaction Log
+          </h2>
+          <div className="bg-gray-900 rounded-lg p-4 max-h-[300px] overflow-y-auto">
+            {log.map((entry, index) => (
+              <p key={index} className="text-gray-300 text-sm break-words">
+                {entry}
+              </p>
+            ))}
+
+            {/* Show Sologenic link only if mainnet */}
+            {sologenicUrl && network === "mainnet" && (
+              <div className="mt-4">
+                <label className="text-cyan-400 text-sm font-medium">
+                  Sologenic Trading Pair URL:
+                </label>
+                <div className="flex items-center mt-2 gap-2">
+                  <input
+                    type="text"
+                    className="flex-1 px-3 py-2 rounded-md bg-gray-700 text-gray-300 text-sm"
+                    value={sologenicUrl}
+                    readOnly
+                  />
+                  <button
+                    onClick={() => copyToClipboard(sologenicUrl)}
+                    className="bg-cyan-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow flex items-center"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={toggleLogModal}
+            className="mt-4 bg-cyan-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section className="py-16 px-4 animate-fade" id="developer-tools">
       <div className="max-w-4xl mx-auto">
@@ -216,16 +285,10 @@ const DeveloperTools: React.FC = () => {
             your address and seed. You can save them in Xaman (formerly Xumm) 
             or any XRPL-compatible wallet of your choice.
           </p>
-          <p className="mb-2">
+          <p className="mb-4">
             <strong>How to import a seed into Xaman:</strong> open Xaman &rarr; 
             create or restore an account &rarr; select “Import Existing Account” 
             &rarr; enter your secret seed.
-          </p>
-          <p className="mb-4">
-            In XRPL token creation, the <strong>issuer</strong> is the address 
-            minting the token, while the <strong>receiver</strong> is the initial 
-            holder. Distribution and trust are handled through 
-            <em> Trust Lines</em> and <em>issuer settings</em>.
           </p>
 
           {/* Example final DEX URL on mainnet */}
@@ -250,7 +313,7 @@ const DeveloperTools: React.FC = () => {
                   "https://sologenic.org/trade?market=XQN%2BrahuJ7WNoKBATKEDDhx5t3Tj3f2jGhbNjd%2FXRP"
                 )
               }
-              className="bg-cyan-500 text-gray-900 px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow"
+              className="bg-cyan-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow flex items-center"
             >
               Copy
             </button>
@@ -272,7 +335,7 @@ const DeveloperTools: React.FC = () => {
                 onClick={() => setNetwork("testnet")}
                 className={`py-2 px-4 rounded-md text-sm font-semibold transition ${
                   network === "testnet"
-                    ? "bg-cyan-500 text-gray-900 btn-glow"
+                    ? "bg-cyan-500 text-white btn-glow"
                     : "bg-gray-700 text-gray-300 hover:bg-cyan-600"
                 }`}
               >
@@ -282,7 +345,7 @@ const DeveloperTools: React.FC = () => {
                 onClick={() => setNetwork("mainnet")}
                 className={`py-2 px-4 rounded-md text-sm font-semibold transition ${
                   network === "mainnet"
-                    ? "bg-cyan-500 text-gray-900 btn-glow"
+                    ? "bg-cyan-500 text-white btn-glow"
                     : "bg-gray-700 text-gray-300 hover:bg-cyan-600"
                 }`}
               >
@@ -293,9 +356,9 @@ const DeveloperTools: React.FC = () => {
 
           {/* Issuer & Receiver Wallet */}
           {[
-            { label: "Issuer", wallet: issuerWallet, setWallet: setIssuerWallet },
-            { label: "Receiver", wallet: receiverWallet, setWallet: setReceiverWallet },
-          ].map(({ label, wallet, setWallet }) => (
+            { label: "Issuer", wallet: issuerWallet, setWallet: setIssuerWallet, icon: <CodeIcon className="h-6 w-6 text-cyan-400 mr-2" /> },
+            { label: "Receiver", wallet: receiverWallet, setWallet: setReceiverWallet, icon: <CollectionIcon className="h-6 w-6 text-cyan-400 mr-2" /> },
+          ].map(({ label, wallet, setWallet, icon }) => (
             <div className="mb-6" key={label}>
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 {label} Wallet
@@ -310,8 +373,9 @@ const DeveloperTools: React.FC = () => {
                 />
                 <button
                   onClick={() => generateWallet(setWallet, network)}
-                  className="bg-cyan-500 text-gray-900 px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow"
+                  className="bg-cyan-500 text-white px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow flex items-center"
                 >
+                  {icon}
                   Generate {label}
                 </button>
               </div>
@@ -330,8 +394,9 @@ const DeveloperTools: React.FC = () => {
                     />
                     <button
                       onClick={() => copyToClipboard(wallet.seed)}
-                      className="bg-cyan-500 text-gray-900 px-3 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow"
+                      className="bg-cyan-500 text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow flex items-center"
                     >
+                      <BookOpenIcon className="h-5 w-5 mr-1" />
                       Copy
                     </button>
                   </div>
@@ -381,14 +446,14 @@ const DeveloperTools: React.FC = () => {
           {/* Create Token Button with Loading Spinner */}
           <button
             onClick={handleTokenCreation}
-            className="bg-cyan-500 text-gray-900 w-full py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow disabled:opacity-50 flex items-center justify-center"
+            className="bg-cyan-500 text-white w-full py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow disabled:opacity-50 flex items-center justify-center"
             disabled={isLoading}
           >
             {isLoading ? (
               <>
                 {/* Simple Tailwind-based spinner */}
                 <svg
-                  className="animate-spin h-5 w-5 mr-2 text-gray-900"
+                  className="animate-spin h-5 w-5 mr-2 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -416,52 +481,13 @@ const DeveloperTools: React.FC = () => {
         </div>
       </div>
 
-      {/* Log Modal */}
-      {isLogOpen && (
-        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-          <div className="bg-gray-800 rounded-lg shadow-lg p-5 w-full max-w-lg">
-            <h2 className="text-cyan-400 text-xl font-semibold mb-4">
-              Transaction Log
-            </h2>
-            <div className="bg-gray-900 rounded-lg p-4 max-h-[300px] overflow-y-auto">
-              {log.map((entry, index) => (
-                <p key={index} className="text-gray-300 text-sm">
-                  {entry}
-                </p>
-              ))}
-
-              {/* Show Sologenic link only if mainnet */}
-              {sologenicUrl && network === "mainnet" && (
-                <div className="mt-4">
-                  <label className="text-cyan-400 text-sm font-medium">
-                    Sologenic Trading Pair URL:
-                  </label>
-                  <div className="flex items-center mt-2 gap-2">
-                    <input
-                      type="text"
-                      className="flex-1 px-3 py-2 rounded-md bg-gray-700 text-gray-300 text-sm"
-                      value={sologenicUrl}
-                      readOnly
-                    />
-                    <button
-                      onClick={() => copyToClipboard(sologenicUrl)}
-                      className="bg-cyan-500 text-gray-900 px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow"
-                    >
-                      Copy
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={toggleLogModal}
-              className="mt-4 bg-cyan-500 text-gray-900 px-4 py-2 rounded-md text-sm font-semibold hover:bg-cyan-600 transition btn-glow"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Log Modal rendered via React Portal */}
+      {isLogOpen && modalRootRef.current &&
+        ReactDOM.createPortal(
+          <LogModal />,
+          modalRootRef.current
+        )
+      }
 
       {/* Toast Notification */}
       <ToastContainer />
