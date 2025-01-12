@@ -111,10 +111,17 @@ const DeveloperTools: React.FC = () => {
         addLog("Mainnet wallet generated (no funding).");
         addLog(`Address: ${data.address}`);
       }
-    } catch (error: any) {
-      addLog(`Error generating wallet: ${error.message}`);
-      console.error(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        addLog(`Error generating wallet: ${error.message}`);
+        console.error(error);
+      } else {
+        // Handle cases where the error might not be an instance of Error
+        addLog("Unknown error occurred during wallet generation.");
+        console.error("An unknown error occurred:", error);
+      }
     }
+    
   };
 
   /**
