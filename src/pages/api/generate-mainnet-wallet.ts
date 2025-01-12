@@ -1,5 +1,3 @@
-// src/pages/api/generate-mainnet-wallet.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import xrpl from 'xrpl';
 
@@ -21,10 +19,19 @@ export default async function handler(
   }
 
   try {
-    const client = new xrpl.Client('wss://s2.ripple.com');
+    // Debugging to check module loading
+    console.log("XRPL Client:", typeof xrpl.Client);
+    console.log("XRPL Wallet:", typeof xrpl.Wallet);
+
+    const client = new xrpl.Client('wss://xrplcluster.com'); // Alternative WebSocket
     await client.connect();
+    console.log("Connected to XRPL");
+
     const wallet = xrpl.Wallet.generate();
+    console.log("Generated Wallet:", wallet);
+
     await client.disconnect();
+    console.log("Disconnected from XRPL");
 
     if (!wallet.classicAddress || !wallet.seed) {
       throw new Error('Failed to generate wallet: Missing address or seed');
@@ -35,7 +42,7 @@ export default async function handler(
       seed: wallet.seed,
     });
   } catch (error: unknown) {
-    console.error(error);
+    console.error("Error in handler:", error);
     const errorMsg = (error as Error).message || 'Internal Server Error';
     return res.status(500).json({ message: errorMsg });
   }
