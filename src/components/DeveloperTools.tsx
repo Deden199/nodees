@@ -163,16 +163,22 @@ const DeveloperTools: React.FC = () => {
         addLog(`Token Issue Hash: ${result.txHashes.tokenIssue}`);
 
         // Decode currency for balances
-        const decodedIssuerBalances = (result.balances.issuer || []).map((b: { currency: string; [key: string]: any }) => {
+        interface Balance {
+          currency: string;
+          amount?: number;  // Jika ada properti lain, tambahkan di sini
+        }
+        
+        const decodedIssuerBalances = (result.balances.issuer || []).map((b: Balance) => {
           return {
             ...b,
-            currency: decodeHexCurrency(b.currency), // decode
+            currency: decodeHexCurrency(b.currency),
           };
         });
-        const decodedReceiverBalances = (result.balances.receiver || []).map((b: { currency: string; [key: string]: any }) => {
+        
+        const decodedReceiverBalances = (result.balances.receiver || []).map((b: Balance) => {
           return {
             ...b,
-            currency: decodeHexCurrency(b.currency), // decode
+            currency: decodeHexCurrency(b.currency),
           };
         });
         
