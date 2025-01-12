@@ -1,6 +1,6 @@
 // pages/api/create-token-testnet.js (atau .ts)
 
-import xrpl from "xrpl";
+const xrpl = require("xrpl");
 
 
 // Helper functions

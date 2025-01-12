@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import xrpl from 'xrpl';
+const xrpl = require("xrpl");
 
 type Data = {
   address: string;

@@ -1,7 +1,7 @@
 // pages/api/create-token-mainnet.js
 
 
-import xrpl from "xrpl";
+const xrpl = require("xrpl");
 
 import { rtdb } from "../../utils/firebaseAdmin"; // Firebase Realtime Database import
 
