@@ -79,15 +79,18 @@ const DeveloperTools: React.FC = () => {
   ) => {
     try {
       addLog(`Generating ${selectedNetwork.toUpperCase()} wallet...`);
-
+  
       if (selectedNetwork === "testnet") {
-        // Call testnet faucet endpoint
-        const response = await fetch("https://us-central1-ajudan-tampan.cloudfunctions.net/fundWallet", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        // Call Testnet wallet funding API
+        const response = await fetch(
+          "https://us-central1-ajudan-tampan.cloudfunctions.net/fundWallet",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fund wallet on Testnet.");
         }
@@ -96,12 +99,12 @@ const DeveloperTools: React.FC = () => {
           address: data.wallet.address,
           seed: data.wallet.seed,
         });
-
+  
         addLog("Wallet successfully funded on Testnet.");
         addLog(`Address: ${data.wallet.address}`);
         addLog(`Funding Tx: ${data.wallet.transactionHash}`);
       } else {
-        // Call mainnet wallet generation API
+        // Call Mainnet wallet generation API
         const response = await fetch(
           "https://us-central1-ajudan-tampan.cloudfunctions.net/generateMainnetWallet",
           {
@@ -109,7 +112,8 @@ const DeveloperTools: React.FC = () => {
             headers: {
               "Content-Type": "application/json",
             },
-          });
+          }
+        );
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || "Failed to generate wallet on Mainnet.");
@@ -129,28 +133,38 @@ const DeveloperTools: React.FC = () => {
         console.error("An unknown error occurred:", error);
       }
     }
-    
   };
-
+  
   /**
    * Create token on XRPL (Testnet or Mainnet)
    */
+  interface Balance {
+    currency: string;
+    balance?: string;
+  }
+  
+  function decodeHexCurrency(hex: string): string {
+    return hex; // Tambahkan logika decoding jika diperlukan
+  }
+  
   const handleTokenCreation = async () => {
     if (!tokenName || !tokenSymbol || !tokenAmount || !issuerWallet.address || !receiverWallet.address) {
       addLog("Please fill in all fields, including issuer and receiver wallets.");
       return;
     }
-
+  
     setLog([]); // Reset log before starting
     setIsLogOpen(true); // Open log modal
     setIsLoading(true);
-
+  
     try {
       addLog(`Starting token creation on ${network.toUpperCase()}...`);
+  
       const endpoint =
-      network === "mainnet"
-        ? "https://us-central1-ajudan-tampan.cloudfunctions.net/createTokenMainnet"
-        : "https://us-central1-ajudan-tampan.cloudfunctions.net/createTokenTestnet";
+        network === "mainnet"
+          ? "https://us-central1-ajudan-tampan.cloudfunctions.net/createTokenMainnet"
+          : "https://us-central1-ajudan-tampan.cloudfunctions.net/createTokenTestnet";
+  
       addLog("Sending API request...");
       const response = await fetch(endpoint, {
         method: "POST",
@@ -163,7 +177,7 @@ const DeveloperTools: React.FC = () => {
           receiverSeed: receiverWallet.seed,
         }),
       });
-
+  
       const result = await response.json();
       if (response.ok) {
         addLog("Token creation successful!");
@@ -171,37 +185,26 @@ const DeveloperTools: React.FC = () => {
         addLog(`Receiver Settings Hash: ${result.txHashes.receiverSettings}`);
         addLog(`Trust Line Hash: ${result.txHashes.trustLine}`);
         addLog(`Token Issue Hash: ${result.txHashes.tokenIssue}`);
-
-        // Decode currency for balances
-        interface Balance {
-          currency: string;
-          amount?: number;  // Jika ada properti lain, tambahkan di sini
-        }
-        
-        const decodedIssuerBalances = (result.balances.issuer || []).map((b: Balance) => {
-          return {
-            ...b,
-            currency: decodeHexCurrency(b.currency),
-          };
-        });
-        
-        const decodedReceiverBalances = (result.balances.receiver || []).map((b: Balance) => {
-          return {
-            ...b,
-            currency: decodeHexCurrency(b.currency),
-          };
-        });
-        
+  
+        const decodedIssuerBalances = (result.balances.issuer || []).map((b: Balance) => ({
+          ...b,
+          currency: decodeHexCurrency(b.currency),
+        }));
+  
+        const decodedReceiverBalances = (result.balances.receiver || []).map((b: Balance) => ({
+          ...b,
+          currency: decodeHexCurrency(b.currency),
+        }));
+  
         addLog("Balances:");
         addLog(`Issuer Balances: ${JSON.stringify(decodedIssuerBalances, null, 2)}`);
         addLog(`Receiver Balances: ${JSON.stringify(decodedReceiverBalances, null, 2)}`);
-
-        // Generate Sologenic URL only on mainnet
+  
         if (network === "mainnet") {
           const encodedSymbol = encodeURIComponent(tokenSymbol);
           const encodedIssuer = encodeURIComponent(issuerWallet.address);
           const sologenicLink = `https://sologenic.org/trade?market=${encodedSymbol}%2B${encodedIssuer}%2FXRP`;
-
+  
           setSologenicUrl(sologenicLink);
           addLog(`Sologenic Trading Pair: ${sologenicLink}`);
         } else {
@@ -217,7 +220,7 @@ const DeveloperTools: React.FC = () => {
       setIsLoading(false);
     }
   };
-
+  
   // Create modal root dynamically
   useEffect(() => {
     const modalRoot = document.createElement("div");

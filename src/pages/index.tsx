@@ -48,7 +48,7 @@ export default function HomePage() {
         <meta property="og:url" content="https://xrplquantum.com" />
         <meta property="og:type" content="website" />
         {/* Tambahkan gambar jika ada */}
-        <meta property="og:image" content="https://xrplquantum.com/images/og-image.png" />
+        <meta property="og:image" content="https://xrplquantum.com/hero.webp" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -57,7 +57,7 @@ export default function HomePage() {
           name="twitter:description"
           content="Empower your blockchain projects with XRPLQuantum's Developer Tools. Easily create tokens on the XRP Ledger, harness low fees, fast transactions, and advanced tokenization features."
         />
-        <meta name="twitter:image" content="https://xrplquantum.com/images/twitter-card.png" />
+        <meta name="twitter:image" content="https://xrplquantum.com/images/hero.webp" />
 
         {/* Structured Data (JSON-LD) */}
         <script
