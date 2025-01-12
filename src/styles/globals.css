@@ -242,7 +242,7 @@ input:focus, textarea:focus, select:focus {
   ring: var(--accent);
 }
 
-/* Smooth Transition for All Interactive Elements */
+/* Smooth Transition for All Interactive Elementsss */
 button, input, textarea, select, a {
   transition: all 0.3s ease-in-out;
 }
