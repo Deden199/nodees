@@ -1,6 +1,8 @@
 // pages/api/create-token-mainnet.js
 
-const xrpl = require("xrpl");
+
+import xrpl from "xrpl";
+
 import { rtdb } from "../../utils/firebaseAdmin"; // Firebase Realtime Database import
 
 // Helpers untuk simbol lebih dari 3 huruf (opsional)

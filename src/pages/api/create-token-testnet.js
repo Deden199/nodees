@@ -1,5 +1,7 @@
 // pages/api/create-token-testnet.js (atau .ts)
-const xrpl = require("xrpl");
+
+import xrpl from "xrpl";
+
 
 // Helper functions
 function asciiToHex(str) {
