@@ -71,7 +71,7 @@ const DeveloperTools: React.FC = () => {
   /**
    * Generate wallet:
    * - If Testnet, call /api/fund-wallet (faucet).
-   * - If Mainnet, generate a wallet without funding.
+   * - If Mainnet, call /api/generate-mainnet-wallet.
    */
   const generateWallet = async (
     setWallet: React.Dispatch<React.SetStateAction<{ address: string; seed: string }>>,
@@ -98,12 +98,18 @@ const DeveloperTools: React.FC = () => {
         addLog(`Address: ${data.wallet.address}`);
         addLog(`Funding Tx: ${data.wallet.transactionHash}`);
       } else {
-        // Mainnet
-        const xrpl = require("xrpl");
-        const wallet = xrpl.Wallet.generate();
-        setWallet({ address: wallet.classicAddress, seed: wallet.seed });
+        // Call mainnet wallet generation API
+        const response = await fetch("/api/generate-mainnet-wallet", {
+          method: "POST",
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to generate wallet on Mainnet.");
+        }
+        const data = await response.json();
+        setWallet({ address: data.address, seed: data.seed });
         addLog("Mainnet wallet generated (no funding).");
-        addLog(`Address: ${wallet.classicAddress}`);
+        addLog(`Address: ${data.address}`);
       }
     } catch (error: any) {
       addLog(`Error generating wallet: ${error.message}`);
