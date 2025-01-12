@@ -20,10 +20,7 @@ export default function HomePage() {
         />
 
         {/* Google Fonts */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
+  
 
         {/* Title halaman utamanya */}
         <title>Create Token on XRP Ledger - XRPLQuantum.com</title>
